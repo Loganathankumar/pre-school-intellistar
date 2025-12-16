@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>IntelliStar – Preschool OS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="brand-logo">IS</div>
+        <div class="brand-meta">
+          <div class="brand-name">IntelliStar</div>
+          <div class="brand-subtitle">Preschool Operations Console</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="selector-group">
+          <select id="centerSelect">
+            <option>Sunrise Kids - Main Campus</option>
+            <option>Sunrise Kids - Branch 1</option>
+          </select>
+          <select id="sessionSelect">
+            <option>AY 2025-26</option>
+            <option>AY 2024-25</option>
+          </select>
+        </div>
+        <button class="btn primary small" id="quickAddChildBtn">+ Add Child</button>
+        <div class="user-pill">
+          <div class="user-avatar">A</div>
+          <div class="user-meta">
+            <div class="user-name">Admin</div>
+            <div class="user-role">Center Head</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Layout -->
+    <div class="layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-label">Overview</div>
+          <button class="nav-item active" data-target="dashboard">
+            <span class="nav-icon">📊</span><span>Dashboard</span>
+          </button>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-label">Core Operations</div>
+          <button class="nav-item" data-target="attendance">
+            <span class="nav-icon">✅</span><span>Attendance</span>
+          </button>
+          <button class="nav-item" data-target="activities">
+            <span class="nav-icon">📷</span><span>Daily Feed</span>
+          </button>
+          <button class="nav-item" data-target="ptm">
+            <span class="nav-icon">👥</span><span>PTM & Notes</span>
+          </button>
+          <button class="nav-item" data-target="lms">
+            <span class="nav-icon">📚</span><span>Learning Tracker</span>
+          </button>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-label">Admin & Finance</div>
+          <button class="nav-item" data-target="admissions">
+            <span class="nav-icon">📝</span><span>Admissions CRM</span>
+          </button>
+          <button class="nav-item" data-target="billing">
+            <span class="nav-icon">💳</span><span>Billing & Dues</span>
+          </button>
+          <button class="nav-item" data-target="reports">
+            <span class="nav-icon">📑</span><span>Report Cards</span>
+          </button>
+          <button class="nav-item" data-target="contacts">
+            <span class="nav-icon">📞</span><span>Contacts</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main">
+        <!-- DASHBOARD -->
+        <section class="view view-active" id="dashboard">
+          <div class="view-header">
+            <h1>Control Center</h1>
+            <div class="view-actions">
+              <button class="btn ghost small" id="todaySummaryBtn">Today</button>
+              <button class="btn ghost small">This Week</button>
+              <button class="btn ghost small">This Month</button>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="kpi-card kpi-green">
+              <div class="kpi-label">Attendance Today</div>
+              <div class="kpi-value" id="kpiAttendance">0 / 0</div>
+              <div class="kpi-meta">Students checked-in</div>
+            </div>
+            <div class="kpi-card kpi-blue">
+              <div class="kpi-label">Pending Fees</div>
+              <div class="kpi-value" id="kpiPendingFees">₹0</div>
+              <div class="kpi-meta">Across all programs</div>
+            </div>
+            <div class="kpi-card kpi-amber">
+              <div class="kpi-label">Open Leads</div>
+              <div class="kpi-value" id="kpiLeads">0</div>
+              <div class="kpi-meta">Admissions in pipeline</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Live Classroom Snapshot</h2>
+                  <p>Mark attendance and view real-time in-out status.</p>
+                </div>
+                <button class="btn primary small" data-target="attendance" data-jump>Open Attendance</button>
+              </div>
+              <div class="panel-body">
+                <table class="table" id="dashboardClassTable">
+                  <thead>
+                    <tr>
+                      <th>Child</th>
+                      <th>Program</th>
+                      <th>Status</th>
+                      <th>In</th>
+                      <th>Out</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Parent Communication Feed</h2>
+                  <p>Recent posts shared with parents.</p>
+                </div>
+                <button class="btn ghost small" data-target="activities" data-jump>Post Update</button>
+              </div>
+              <div class="panel-body feed-list" id="dashboardFeed"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ATTENDANCE -->
+        <section class="view" id="attendance">
+          <div class="view-header">
+            <h1>Attendance & Check-in</h1>
+            <div class="view-actions">
+              <input type="date" id="attDate" />
+              <select id="attProgramFilter">
+                <option value="ALL">All Programs</option>
+                <option value="Nursery">Nursery</option>
+                <option value="LKG">LKG</option>
+                <option value="UKG">UKG</option>
+              </select>
+              <button class="btn primary small" id="markAllPresentBtn">Mark All In</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-body">
+              <table class="table" id="attendanceTable">
+                <thead>
+                  <tr>
+                    <th>Child</th>
+                    <th>Program</th>
+                    <th>Status</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- DAILY FEED -->
+        <section class="view" id="activities">
+          <div class="view-header">
+            <h1>Daily Updates & Media</h1>
+            <div class="view-actions">
+              <button class="btn primary small" id="addFeedBtn">+ Add Post</button>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Create Update</h2>
+              </div>
+              <div class="panel-body form-grid">
+                <input type="text" id="feedTitle" placeholder="Title (e.g., Colour Sorting Activity)" />
+                <select id="feedProgram">
+                  <option value="All">All Programs</option>
+                  <option value="Nursery">Nursery</option>
+                  <option value="LKG">LKG</option>
+                  <option value="UKG">UKG</option>
+                </select>
+                <textarea id="feedText" rows="3" placeholder="Short description for parents"></textarea>
+                <input type="url" id="feedMediaUrl" placeholder="Image/Video URL (optional)" />
+                <button class="btn primary" id="postFeedBtn">Post to Parents</button>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Feed Timeline</h2>
+              </div>
+              <div class="panel-body feed-list" id="feedTimeline"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PTM & NOTES -->
+        <section class="view" id="ptm">
+          <div class="view-header">
+            <h1>PTM & Parent Notes</h1>
+            <div class="view-actions">
+              <button class="btn primary small" id="schedulePtmBtn">+ Schedule PTM</button>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Schedule PTM</h2>
+              </div>
+              <div class="panel-body form-grid">
+                <select id="ptmChild"></select>
+                <input type="datetime-local" id="ptmDateTime" />
+                <select id="ptmMode">
+                  <option>In-Person</option>
+                  <option>Online</option>
+                  <option>Phone</option>
+                </select>
+                <textarea id="ptmAgenda" rows="3" placeholder="Agenda / key discussion points"></textarea>
+                <button class="btn primary" id="savePtmBtn">Save PTM</button>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Upcoming PTMs</h2>
+              </div>
+              <div class="panel-body list" id="ptmList"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- LMS / LEARNING TRACKER -->
+        <section class="view" id="lms">
+          <div class="view-header">
+            <h1>Learning Tracker</h1>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Capture Milestone</h2>
+              </div>
+              <div class="panel-body form-grid">
+                <select id="lmsChild"></select>
+                <select id="lmsDomain">
+                  <option>Language</option>
+                  <option>Cognitive</option>
+                  <option>Motor Skills</option>
+                  <option>Social & Emotional</option>
+                </select>
+                <textarea id="lmsNote" rows="3" placeholder="Observation"></textarea>
+                <select id="lmsLevel">
+                  <option>Emerging</option>
+                  <option>Developing</option>
+                  <option>Proficient</option>
+                </select>
+                <button class="btn primary" id="saveLmsBtn">Log Milestone</button>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Recent Milestones</h2>
+              </div>
+              <div class="panel-body list" id="lmsList"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMISSIONS -->
+        <section class="view" id="admissions">
+          <div class="view-header">
+            <h1>Admissions CRM</h1>
+            <div class="view-actions">
+              <button class="btn primary small" id="addLeadBtn">+ New Lead</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Lead Funnel</h2>
+            </div>
+            <div class="panel-body">
+              <table class="table" id="leadTable">
+                <thead>
+                  <tr>
+                    <th>Child</th>
+                    <th>Parent</th>
+                    <th>Program</th>
+                    <th>Stage</th>
+                    <th>Expected Join</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- BILLING -->
+        <section class="view" id="billing">
+          <div class="view-header">
+            <h1>Billing & Dues</h1>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Raise Invoice</h2>
+              </div>
+              <div class="panel-body form-grid">
+                <select id="billChild"></select>
+                <input type="number" id="billAmount" placeholder="Amount (₹)" />
+                <input type="text" id="billLabel" placeholder="Description (e.g., Term Fee Q1)" />
+                <input type="date" id="billDue" />
+                <button class="btn primary" id="createInvoiceBtn">Create Invoice</button>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Pending Invoices</h2>
+              </div>
+              <div class="panel-body">
+                <table class="table" id="invoiceTable">
+                  <thead>
+                    <tr>
+                      <th>Child</th>
+                      <th>Label</th>
+                      <th>Amount</th>
+                      <th>Due</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- REPORT CARDS -->
+        <section class="view" id="reports">
+          <div class="view-header">
+            <h1>Report Cards</h1>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Generate Report</h2>
+              </div>
+              <div class="panel-body form-grid">
+                <select id="rcChild"></select>
+                <select id="rcTerm">
+                  <option>Term 1</option>
+                  <option>Term 2</option>
+                  <option>Final</option>
+                </select>
+                <input type="text" id="rcHighlights" placeholder="Highlights" />
+                <textarea id="rcRemarks" rows="3" placeholder="Teacher remarks"></textarea>
+                <button class="btn primary" id="createRcBtn">Save Report</button>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Reports Archive</h2>
+              </div>
+              <div class="panel-body list" id="rcList"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CONTACTS -->
+        <section class="view" id="contacts">
+          <div class="view-header">
+            <h1>Contacts Directory</h1>
+            <div class="view-actions">
+              <button class="btn primary small" id="addContactBtn">+ Add Contact</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>People & Departments</h2>
+            </div>
+            <div class="panel-body">
+              <div class="contacts-grid" id="contactsGrid"></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Simple modal for quick child add -->
+  <div class="modal-backdrop" id="childModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Add Child</h2>
+        <button class="icon-btn" id="closeChildModal">✕</button>
+      </div>
+      <div class="modal-body form-grid">
+        <input type="text" id="childName" placeholder="Child name" />
+        <select id="childProgram">
+          <option>Nursery</option>
+          <option>LKG</option>
+          <option>UKG</option>
+        </select>
+        <input type="text" id="childParent" placeholder="Parent name" />
+        <input type="tel" id="childPhone" placeholder="Parent phone" />
+        <button class="btn primary" id="saveChildBtn">Save Child</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal shell reused for simple prompts could be added here -->
+
+  <script src="app.js"></script>
+</body>
+</html>
